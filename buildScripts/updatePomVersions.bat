@@ -102,3 +102,5 @@ call mvn versions:set -DgenerateBackupPoms=false -DnewVersion=%new_version%
 
 :: reset the working directory
 popd
+
+:
