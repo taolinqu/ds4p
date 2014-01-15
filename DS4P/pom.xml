@@ -103,6 +103,16 @@
 			<url>http://dist.wso2.org/maven2</url>
 		</pluginRepository>
 	</pluginRepositories>
+	
+	<modules>
+		<module>access-control-service</module>	
+		
+		<module>acs-showcase</module>	
+		
+		<module>consent-gen</module>
+		
+		<module>consent2share</module>
+	</modules>
 
 	<properties>
 		<java.version>1.6</java.version>
