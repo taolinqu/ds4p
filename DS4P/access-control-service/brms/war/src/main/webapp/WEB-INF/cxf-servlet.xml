@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:cxf="http://cxf.apache.org/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:soap="http://cxf.apache.org/bindings/soap"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+         http://www.springframework.org/schema/beans 
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+         http://cxf.apache.org/jaxws
+         http://cxf.apache.org/schemas/jaxws.xsd
+         http://www.springframework.org/schema/util
+         http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <!-- Import statement optional but often required if you're declaring 
+         other CXF beans in this file such as CXF's JMX MBeans -->
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
+	
+	<util:properties id="endpointAddressProperties"
+		location="/WEB-INF/classes/endpointAddress.properties" />
+	
+    <jaxws:endpoint id="RuleExecutionService"
+		implementor="#ruleExecutionServiceWsImpl"
+		wsdlLocation="classpath:wsdl/RuleExecutionService.wsdl"
+		address="/RuleExecutionService">
+	</jaxws:endpoint>    
+    
+     <bean id="ruleExecutionServiceWsImpl"
+		class="gov.samhsa.acs.brms.ws.RuleExecutionServiceWsImpl"
+		scope="prototype" autowire="byType" />
+		
+	<bean id="ruleExecutionServiceImpl"
+		class="gov.samhsa.acs.brms.RuleExecutionServiceImpl"
+		scope="prototype" autowire="constructor" /> 
+		
+	<bean id="guvnorServiceImpl"
+		class="gov.samhsa.acs.brms.guvnor.GuvnorServiceImpl"
+		scope="prototype"> 
+		<constructor-arg index="0" value="#{endpointAddressProperties.guvnorService}"  />
+		<constructor-arg index="1" value="#{endpointAddressProperties.guvnorServiceUsername}"  />
+		<constructor-arg index="2" value="#{endpointAddressProperties.guvnorServicePassword}"  />
+	</bean>
+	
+	<bean id="simpleMarshallerImpl"
+		class="gov.samhsa.acs.common.tool.SimpleMarshallerImpl"
+		scope="prototype" />
+		
+</beans>

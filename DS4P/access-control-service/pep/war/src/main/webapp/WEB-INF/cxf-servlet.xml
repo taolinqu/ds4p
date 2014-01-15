@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:soap="http://cxf.apache.org/bindings/soap" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+         http://www.springframework.org/schema/beans 
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+         http://cxf.apache.org/jaxws
+         http://cxf.apache.org/schemas/jaxws.xsd
+         http://www.springframework.org/schema/util
+         http://www.springframework.org/schema/util/spring-util-3.0.xsd"
+	default-lazy-init="true" default-init-method="afterPropertiesSet">
+
+	<!-- Import statement optional but often required if you're declaring other 
+		CXF beans in this file such as CXF's JMX MBeans -->
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+
+	<util:properties id="endpointAddressProperties"
+		location="/WEB-INF/classes/endpointAddress.properties" />
+	<util:properties id="parameterConfigProperties"
+		location="/WEB-INF/classes/parameterConfig.Properties" />
+
+	<!-- End points -->
+	<jaxws:endpoint id="PepService" implementor="#pepPortTypeImpl"
+		wsdlLocation="classpath:wsdl/Pep.wsdl" address="/PepService">
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+	</jaxws:endpoint>
+
+	<jaxws:endpoint id="filterc32service" implementor="#filterC32ServiceImpl"
+		wsdlLocation="classpath:wsdl/FilterC32Service.wsdl" address="/filterc32service">
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+	</jaxws:endpoint>
+	
+    <!--
+	<jaxws:endpoint id="pushfilterc32service" implementor="#pushfilterC32ServiceImpl"
+		wsdlLocation="classpath:wsdl/PushFilterC32Service.wsdl" address="/pushfilterc32service">
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+	</jaxws:endpoint>
+    -->
+    
+	<jaxws:endpoint id="xdsdocumentservice" implementor="#XDSDocumentServiceImpl"
+		wsdlLocation="classpath:wsdl/XDSDocumentService.wsdl" address="/xdsdocumentservice">
+	</jaxws:endpoint>
+
+	<bean id="XDSDocumentServiceImpl"
+		class="gov.samhsa.acs.pep.ws.XDSDocumentServiceImpl"
+		scope="prototype" autowire="byType" />
+
+	<bean id="filterC32ServiceImpl"
+		class="gov.samhsa.acs.pep.ws.FilterC32ServiceImpl"
+		scope="prototype" autowire="byType" />
+
+	<bean id="pushfilterC32ServiceImpl"
+		class="gov.samhsa.acs.pep.ws.PushFilterC32ServiceImpl"
+		scope="prototype" autowire="byType" />
+
+	<bean id="pepImpl" class="gov.samhsa.acs.pep.PepImpl"
+		scope="prototype">
+		<constructor-arg ref="c32GetterImpl" />
+		<constructor-arg ref="contextHandlerImpl" />
+		<constructor-arg ref="documentSegmentationImpl" />
+		<constructor-arg ref="dataHandlerToBytesConverterImpl" />
+		<constructor-arg ref="xdsbRepositoryImpl" />
+		<constructor-arg ref="xdsbRegistryImpl" />
+		<property name="subjectPurposeOfUse"
+			value="#{parameterConfigProperties.subjectPurposeOfUse}" />
+		<property name="subjectLocality" value="#{parameterConfigProperties.subjectLocality}" />
+		<property name="organization" value="#{parameterConfigProperties.organization}" />
+		<property name="organizationId" value="#{parameterConfigProperties.organizationId}" />
+		<property name="resourceName" value="#{parameterConfigProperties.resourceName}" />
+		<property name="resourceType" value="#{parameterConfigProperties.resourceType}" />
+		<property name="resourceAction" value="#{parameterConfigProperties.resourceAction}" />
+	</bean>
+
+	<bean id="c32GetterImpl"
+		class="gov.samhsa.acs.pep.c32getter.C32GetterImpl"
+		scope="prototype">
+		<constructor-arg value="#{endpointAddressProperties.c32Service}" />
+	</bean>
+	
+	<!-- New beans -->
+	
+	<!-- Common Tools -->
+	<bean id="documentXmlConverterImpl"
+		class="gov.samhsa.acs.common.tool.DocumentXmlConverterImpl"
+		scope="prototype"/>
+	<bean id="fileReaderImpl"
+		class="gov.samhsa.acs.common.tool.FileReaderImpl"
+		scope="prototype"/>
+	<bean id="simpleMarshallerImpl"
+		class="gov.samhsa.acs.common.tool.SimpleMarshallerImpl"
+		scope="prototype" />
+		
+	<!-- XDS.b -->
+	<!-- XDS.b: common -->
+	<bean id="xdsbErrorFactory"
+		class="gov.samhsa.acs.xdsb.common.XdsbErrorFactory"
+		scope="prototype">
+	</bean>	
+	<!-- XDS.b: clients -->
+	<bean id="xdsbRegistryWebServiceClient"
+		class="gov.samhsa.acs.xdsb.registry.wsclient.XdsbRegistryWebServiceClient"
+		scope="prototype">
+		<constructor-arg value="#{endpointAddressProperties.xdsbRegistry}" />
+	</bean>
+	<bean id="xdsbRepositorybWebServiceClient"
+		class="gov.samhsa.acs.xdsb.repository.wsclient.XDSRepositorybWebServiceClient"
+		scope="prototype">
+		<constructor-arg value="#{endpointAddressProperties.xdsbRepository}" />
+	</bean>
+	<!-- XDS.b: adapters -->
+	<bean id="adhocQueryResponseFilter"
+		class="gov.samhsa.acs.xdsb.registry.wsclient.adapter.AdhocQueryResponseFilter"
+		scope="prototype" autowire="constructor">
+	</bean>
+	<bean id="xdsbRegistryAdapter"
+		class="gov.samhsa.acs.xdsb.registry.wsclient.adapter.XdsbRegistryAdapter"
+		scope="prototype" autowire="constructor">
+	</bean>
+	<bean id="retrieveDocumentSetResponseFilter"
+		class="gov.samhsa.acs.xdsb.repository.wsclient.adapter.RetrieveDocumentSetResponseFilter"
+		scope="prototype" autowire="constructor">
+	</bean>
+	<bean id="xdsbRepositoryAdapter"
+		class="gov.samhsa.acs.xdsb.repository.wsclient.adapter.XdsbRepositoryAdapter"
+		scope="prototype" autowire="constructor">
+	</bean>
+	
+	<bean id="xdsbRepositoryImpl"
+		class="gov.samhsa.acs.pep.xdsbrepository.XdsbRepositoryImpl"
+		scope="prototype">
+		<constructor-arg value="#{endpointAddressProperties.xdsbRepository}" />
+	</bean>
+
+	<bean id="xdsbRegistryImpl"
+		class="gov.samhsa.acs.pep.xdsbregistry.XdsbRegistryImpl"
+		scope="prototype">
+		<constructor-arg value="#{endpointAddressProperties.xdsbRegistry}" />
+	</bean>
+	
+	<!-- PDP -->
+	<!-- PDP: data - PolicyDecisionPointImplDataXdsb -->
+	<bean id="policyDecisionPointImplDataXdsb"
+		class="gov.samhsa.acs.contexthandler.PolicyDecisionPointImplDataXdsb"
+		scope="prototype" autowire="constructor">
+	</bean>
+	
+	<!-- Uncomment the following to Use PolicyDecisionPointImplDataJdbc instead of PolicyDecisionPointImplDataXdsb -->
+	
+	<!-- <bean id="policyDecisionPointImplData"
+		class="gov.samhsa.acs.contexthandler.PolicyDecisionPointImplDataJdbc"
+		scope="prototype" autowire="constructor">
+	</bean>
+	<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/consent2share?autoReconnect=true" />
+		<property name="username" value="root" />
+		<property name="password" value="admin" />
+	</bean>
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
+        <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+    </bean>
+    <bean id="nativeJdbcExtractor"
+		class="org.springframework.jdbc.support.nativejdbc.C3P0NativeJdbcExtractor"
+		lazy-init="true" /> -->
+	
+	<!-- PDP: request generator -->
+	<bean id="requestGenerator"
+		class="gov.samhsa.acs.contexthandler.RequestGenerator"
+		scope="prototype">
+	</bean>
+	<!-- PDP: pdp -->
+	<bean id="policyDecisionPointImpl"
+		class="gov.samhsa.acs.contexthandler.PolicyDecisionPointImpl"
+		scope="prototype" autowire="constructor">
+	</bean>	
+	
+	<!-- ContextHandler -->
+	<!-- ContextHandler: context handler -->
+	<bean id="contextHandlerImpl"
+		class="gov.samhsa.acs.contexthandler.ContextHandlerImpl"
+		scope="prototype" autowire="constructor">
+	</bean>
+	
+	<!-- BRMS -->
+	<!-- BRMS: Guvnor -->
+	<bean id="guvnorServiceImpl"
+		class="gov.samhsa.acs.brms.guvnor.GuvnorServiceImpl"
+		scope="prototype"> 
+		<constructor-arg index="0" value="#{endpointAddressProperties.guvnorService}"  />
+		<constructor-arg index="1" value="#{endpointAddressProperties.guvnorServiceUsername}"  />
+		<constructor-arg index="2" value="#{endpointAddressProperties.guvnorServicePassword}"  />
+	</bean>
+	<bean id="ruleExecutionServiceImpl"
+		class="gov.samhsa.acs.brms.RuleExecutionServiceImpl"
+		scope="prototype" autowire="constructor" />
+	
+	<!-- DocumentSegmentation -->
+	<!-- DocumentSegmentation: audit -->
+	<bean id="auditServiceImpl"
+		class="gov.samhsa.acs.documentsegmentation.audit.AuditServiceImpl"
+		scope="prototype">
+		<constructor-arg value="#{endpointAddressProperties.auditService}" />
+	</bean>
+	<!-- DocumentSegmentation: tools -->
+	<bean id="documentEditorImpl"
+		class="gov.samhsa.acs.documentsegmentation.tools.DocumentEditorImpl"
+		scope="prototype" autowire="byType"/>
+	<bean id="documentEncrypterImpl"
+		class="gov.samhsa.acs.documentsegmentation.tools.DocumentEncrypterImpl"
+		scope="prototype" autowire="byType"/>
+	<bean id="documentMaskerImpl"
+		class="gov.samhsa.acs.documentsegmentation.tools.DocumentMaskerImpl"
+		scope="prototype" autowire="byType"/>
+	<bean id="documentRedactorImpl"
+		class="gov.samhsa.acs.documentsegmentation.tools.DocumentRedactorImpl"
+		scope="prototype" autowire="byType"/>
+	<bean id="documentTaggerImpl"
+		class="gov.samhsa.acs.documentsegmentation.tools.DocumentTaggerImpl"
+		scope="prototype"/>
+	<bean id="metadataGeneratorImpl"
+		class="gov.samhsa.acs.documentsegmentation.tools.MetadataGeneratorImpl"
+		scope="prototype"/>
+	<bean id="documentFactModelExtractorImpl"
+		class="gov.samhsa.acs.documentsegmentation.tools.DocumentFactModelExtractorImpl"
+		scope="prototype"/>
+	<bean id="additionalMetadataGeneratorForSegmentedClinicalDocumentImpl"
+		class="gov.samhsa.acs.documentsegmentation.tools.AdditionalMetadataGeneratorForSegmentedClinicalDocumentImpl"
+		scope="prototype"/>
+	<!-- DocumentSegmentation: document segmentation -->		
+	<bean id="documentSegmentationImpl"
+		class="gov.samhsa.acs.documentsegmentation.DocumentSegmentationImpl"
+		scope="prototype" autowire="constructor" />	
+		
+	<!-- PEP -->
+	<!-- PEP: DataHandlerToBytesConverter -->	
+	<bean id="dataHandlerToBytesConverterImpl"
+		class="gov.samhsa.acs.pep.DataHandlerToBytesConverterImpl"
+		scope="prototype">
+	</bean>
+	
+	<!-- PEP: pep -->
+	<bean id="policyEnforcementPointImpl"
+		class="gov.samhsa.acs.pep.PolicyEnforcementPointImpl"
+		scope="prototype" autowire="constructor">
+		<property name="patientId" value="#{parameterConfigProperties.patientId}" />
+		<property name="recepientSubjectNPI" value="#{parameterConfigProperties.recepientSubjectNPI}" />
+		<property name="intermediarySubjectNPI" value="#{parameterConfigProperties.intermediarySubjectNPI}" />
+		<property name="subjectPurposeOfUse" value="#{parameterConfigProperties.subjectPurposeOfUse}" />
+		<property name="homeCommunityId" value="#{parameterConfigProperties.domainId}" />
+	</bean>
+	<!-- PEP: pep-ws -->
+	<bean id="pepPortTypeImpl"
+		class="gov.samhsa.acs.pep.ws.PepPortTypeImpl"
+		scope="prototype" autowire="constructor" />
+		
+</beans>
