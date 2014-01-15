@@ -217,7 +217,6 @@
 		<Saxon-HE.version>9.5.1-2</Saxon-HE.version>
 		<commons-io.version>2.1</commons-io.version>
 		<xmlunit.version>1.5</xmlunit.version>
-		<consent-gen.version>0.1.0-SNAPSHOT</consent-gen.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<!-- consent2Share Project Properties Start -->
 
@@ -234,7 +233,7 @@
 		<xalan.version>2.7.1</xalan.version>
 		<xml-apis.version>2.0.2</xml-apis.version>
 		<jsr311-api.version>1.1.1</jsr311-api.version>
-		<acs-components.version>1.1.0-SNAPSHOT</acs-components.version>
+		<project.version>1.1.0-SNAPSHOT</project.version>
 		<herasaf.version>1.0.0.M3</herasaf.version>
 
 		<json-path.version>0.8.1</json-path.version>
@@ -813,27 +812,27 @@
 			<dependency>
 				<groupId>gov.samhsa.consent</groupId>
 				<artifactId>consent-gen</artifactId>
-				<version>${consent-gen.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>common-library</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>brms-client</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>brms-factmodel</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>brms-service</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.googlecode.sardine</groupId>
@@ -849,53 +848,53 @@
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>document-segmentation-service</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share.accesscontrolservice.contexthandler</groupId>
 				<artifactId>context-handler-service</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>xdsb-repository-client-jar-with-dependencies</groupId>
 				<artifactId>xdsb-repository-client-jar-with-dependencies</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>xdsb-registry-client-jar-with-dependencies</groupId>
 				<artifactId>xdsb-registry-client-jar-with-dependencies</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>xdsb-common</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>xdsb-registry-client</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>xdsb-repository-client</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>pep-service</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>context-handler-client</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>gov.samhsa.consent2share</groupId>
 				<artifactId>c32-service-client</artifactId>
-				<version>${acs-components.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.herasaf.xacml.core</groupId>
