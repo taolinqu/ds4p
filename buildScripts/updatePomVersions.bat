@@ -1,10 +1,9 @@
 @echo off
-echo 'Will change the versions in pom.xml files...'
+echo 'Will change the versions in pom.xml files based on git branch name when doing Jenkins CI build...'
 
 ::
 :: get git branch_name
 ::
-:: set GIT_BRANCH=bla
 
 :: get current git branch name
 :: Jenkins will set GIT_BRANCH environment variable if this batch is running in a Jenkins job
@@ -28,7 +27,12 @@ if defined GIT_BRANCH (
  	for /f %%i in ('"git rev-parse --abbrev-ref HEAD"') do set branch_name=%%i
 )
 
-echo %branch_name%
+echo branch_name is %branch_name%
+
+if %branch_name%==dev (
+	echo It is dev branch build. Do nothing
+	goto end 
+)
 
 ::
 :: get current_version in parent pom
@@ -43,11 +47,12 @@ REM echo %~f0
 :: You can refer to other files in the same folder as the batch script by using this syntax
 :: echo %0\..\SecondBatch.cmd
 REM echo %~dp0\access-control-service
-
-REM WORKSPACE  The absolute path of the workspace if running in a Jenkins job.  
-
 :: set the working directory of a command in windows batch file
-pushd %~dp0\access-control-service
+REM pushd %~dp0\access-control-service
+
+:: WORKSPACE  The absolute path of the workspace if running in a Jenkins job.  
+:: set the working directory of a command in windows batch file
+pushd %WORKSPACE%\DS4P
 
 :: get current version of the top level pom
 :: call mvn help:evaluate -Dexpression=project.version
@@ -57,7 +62,7 @@ call mvn help:evaluate -Dexpression=project.version
 :: The following link couldn't excluding Downloading: line
 for /f %%i in ('"mvn help:evaluate -Dexpression=project.version | grep -v '\[.*'"') do set current_version=%%i
 
-echo %current_version%
+echo current_version is %current_version%
 
 ::
 :: get Jenkins BUILD_NUMBER
@@ -71,12 +76,12 @@ if defined BUILD_NUMBER (
 )
 
 ::
-:: get git branch_name
+:: build new version
 ::
 
 if %branch_name%==dev (
 	echo It is dev branch build
-	set new_version=%current_version%
+	goto end
 ) else if %branch_name%==master (
 	echo It is master branch build
 	:: replace .0-SNAPSHOT with empty and append build number
@@ -88,10 +93,7 @@ if %branch_name%==dev (
 	set new_version=%current_version:.0-SNAPSHOT=%.%BUILD_NUMBER%-%branch_name%
 )
 
-:: build new version
-:: set new_version=%current_version%-%branch_name%
-
-echo %new_version%
+echo new_version is %new_version%
 
 :: Sets the current projects version, updating the details of any child modules as necessary.
 call mvn versions:set -DgenerateBackupPoms=false -DnewVersion=%new_version%
@@ -99,8 +101,7 @@ call mvn versions:set -DgenerateBackupPoms=false -DnewVersion=%new_version%
 :: Scans the current projects child modules, updating the versions of any which use the current project to the version of the current project.
 ::call mvn versions:update-child-modules -DgenerateBackupPoms=false -DnewVersion=%new_version%
 
-
 :: reset the working directory
 popd
 
-:
+:end
