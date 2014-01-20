@@ -107,6 +107,12 @@ call mvn versions:set -DgenerateBackupPoms=false -DnewVersion=%new_version%
 
 echo PROJECT_VERSION=%new_version% > version.properties
 
+::
+:: generate a commit properties file to be used by Jenkins Enviorenment Injector Plugin to generate a Jenkins GIT_COMMIT_ID environment variable
+::
+for /f %%i in ('"git rev-parse HEAD"') do set commit_id=%%i
+echo GIT_COMMIT_ID=%commit_id% > commit.properties
+
 :: reset the working directory
 popd
 
