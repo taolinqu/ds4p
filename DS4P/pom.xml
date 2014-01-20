@@ -107,11 +107,11 @@
 	<modules>
 		<module>access-control-service</module>	
 		
-		<module>acs-showcase</module>	
+		<!-- <module>acs-showcase</module>	
 		
 		<module>consent-gen</module>
 		
-		<module>consent2share</module>
+		<module>consent2share</module> -->
 	</modules>
 
 	<properties>
