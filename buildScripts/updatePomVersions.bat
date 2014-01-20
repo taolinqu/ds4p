@@ -101,6 +101,12 @@ call mvn versions:set -DgenerateBackupPoms=false -DnewVersion=%new_version%
 :: Scans the current projects child modules, updating the versions of any which use the current project to the version of the current project.
 ::call mvn versions:update-child-modules -DgenerateBackupPoms=false -DnewVersion=%new_version%
 
+::
+:: generate a version properties file to be used by Jenkins Enviorenment Injector Plugin to generate a Jenkins PROJECT_VERSION environment variable
+::
+
+echo PROJECT_VERSION=%new_version% > version.properties
+
 :: reset the working directory
 popd
 
